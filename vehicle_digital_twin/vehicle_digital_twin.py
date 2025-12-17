@@ -40,8 +40,9 @@ logging.basicConfig(
 )
 
 context = {"broker": BROKER, "read_all_vehicle_data": read_all_vehicle_data}
-# logging.info(f"Loading plugins from {ROOT / 'listeners.json'}")
-plugins = load_plugins("listeners.json", context)
+# Load plugins using absolute path
+config_path = Path(__file__).parent / "listeners.json"
+plugins = load_plugins(str(config_path), context)
 
 def merge_and_store(vin):
     """If all parts exist for this VIN, merge and write to DB."""
@@ -112,6 +113,7 @@ def on_message(client, userdata, msg):
             print("WARNING: location received but no VIN known yet")
             return
         vin = list(buffer.keys())[-1]
+        ensure_buffer(vin)
         buffer[vin]["location"] = payload
 
     elif msg.topic == TOPIC_GIRO:
@@ -119,6 +121,7 @@ def on_message(client, userdata, msg):
             print("WARNING: status received but no VIN known yet")
             return
         vin = list(buffer.keys())[-1]
+        ensure_buffer(vin)
         buffer[vin]["giro"] = payload
 
     if vin:
