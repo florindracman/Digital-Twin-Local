@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 import json
 
-# Vehicle Digital Twin tests
+# Vehicle Digital Twin tests - first, mock external dependencies
 # Mock all external dependencies before importing
 sys.modules['paho'] = MagicMock()
 sys.modules['paho.mqtt'] = MagicMock()
