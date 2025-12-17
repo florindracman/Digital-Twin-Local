@@ -73,8 +73,7 @@ class TestVehicleDigitalTwin(unittest.TestCase):
         self.assertIn(self.test_vin, buffer)
     
     @patch('vehicle_digital_twin.try_merge')
-    @patch('vehicle_digital_twin.ensure_buffer')
-    def test_on_message_vin_topic(self, mock_ensure, mock_merge):
+    def test_on_message_vin_topic(self, mock_merge):
         """Test handling VIN topic message."""
         from vehicle_digital_twin import on_message, buffer, TOPIC_VIN
         
@@ -86,7 +85,9 @@ class TestVehicleDigitalTwin(unittest.TestCase):
         
         on_message(None, None, mock_msg)
         
-        mock_ensure.assert_called_once_with(self.test_vin)
+        # Verify buffer was populated
+        self.assertIn(self.test_vin, buffer)
+        self.assertEqual(buffer[self.test_vin]["vin"], {"vin": self.test_vin})
         mock_merge.assert_called_once_with(self.test_vin)
     
     @patch('vehicle_digital_twin.try_merge')

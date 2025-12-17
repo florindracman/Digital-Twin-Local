@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch, MagicMock, mock_open
 import sys
 from pathlib import Path
 import json
@@ -40,7 +40,7 @@ class TestIntegration(unittest.TestCase):
         
         context = {"broker": "test-broker"}
         
-        with patch('builtins.open', create=True) as mock_file:
+        with patch('builtins.open', mock_open()):
             with patch('json.load', return_value=config):
                 instances = load_plugins("test.json", context)
         

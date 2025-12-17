@@ -69,7 +69,7 @@ class TestRpcServerPlugin(unittest.TestCase):
         
         self.plugin.start()
         
-        mock_mqtt_client.assert_called_once()
+        # Only verify thread was created and started (mqtt.Client is called inside thread)
         mock_thread.assert_called_once()
         mock_thread_instance.start.assert_called_once()
     
