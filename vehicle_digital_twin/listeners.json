@@ -1,0 +1,24 @@
+{
+  "plugins": [
+    {
+      "name": "rpc_server",
+      "module": "plugins.rpc_server_plugin",
+      "class": "RpcServerPlugin",
+      "enabled": true,
+      "config": {
+        "request_topic": "rpc/request/read_all_vehicle_data",
+        "response_topic_prefix": "rpc/response/"
+      }
+    },
+    {
+      "name": "trigger_listener",
+      "module": "plugins.trigger_listener_plugin",
+      "class": "TriggerListenerPlugin",
+      "enabled": true,
+      "config": {
+        "trigger_topic": "vehicles/request",
+        "data_topic": "vehicles/data"
+      }
+    }
+  ]
+}

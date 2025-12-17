@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    hostname: mqtt-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  fdt-broker:
+    image: eclipse-mosquitto:2.0
+    hostname: fdt-broker
+    ports:
+      - "1884:1883"    # B is exposed on 1884 externally
+    volumes:
+      - ./mosquitto_fdt.conf:/mosquitto/config/mosquitto.conf
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: vehicles
+    ports:
+      - "5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 2s
+      retries: 10
+
+  db_fleet:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: fleet
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 2s
+      retries: 10
+
+  producer:
+    build: ./producer
+    depends_on:
+      - mqtt-broker
+  producer_giro:
+    build: ./producer_giro
+    depends_on:
+      - mqtt-broker
+  producer_location:
+    build: ./producer_location
+    depends_on:
+      - mqtt-broker
+  vehicle_digital_twin:
+    build: ./vehicle_digital_twin
+    depends_on:
+      - mqtt-broker
+      - db
+  producer_trigger:
+    build: ./producer_trigger
+    depends_on:
+      - mqtt-broker
+  fleet_digital_twin:
+    build: ./fleet_digital_twin
+    depends_on:
+      - mqtt-broker
+      - db
+  rpc_producer:
+    build: ./rpc_producer
+    depends_on:
+      - mqtt-broker
